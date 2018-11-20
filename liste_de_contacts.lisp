@@ -5,6 +5,8 @@
 
 ;; definition of global variables
 (defvar *addressbook* nil)
+(defvar *welcomemsg* "Ich! Welcome to List' 2 Kontakt' ")
+(defvar *helpmsg* "Hello, welcome to List' 2 Kontakt'. Here you can do multiple things; There is the command list: - add: add an entry to your addressbook - save: save the current addressbook to file - load: load addressbook from file - exit: exit")
 
 ;; first function: to "write" a name-char
 (defun make-name (last first job mail phone)
@@ -59,8 +61,11 @@
 
 
 (defun main-menu()
+  (format t "~a~%" *welcomemsg*)
   (loop
-     (cond ((string-equal (prompt-read "whaddyawanado? ") "add") (edit-contacts))
-	   ((string-equal (prompt-read "whaddyawanado? ") "save") (save-book (prompt-read "Save file as: ")))
-	   ((string-equal (prompt-read "whaddyawanado? ") "load") (load-book (prompt-read "Load File: ")))
-	   ((string-equal (prompt-read "whaddyawanado? ") "exit") (return)))))
+     (setq jose (prompt-read "whaddyawanado?"))
+     (cond ((string-equal jose "add") (edit-contacts))
+	   ((string-equal jose "save") (save-book (prompt-read "Save file as: ")))
+	   ((string-equal jose "load") (load-book (prompt-read "Load File: ")))
+	   ((string-equal jose "help") (format t "~a~%" *helpmsg*))
+	   ((string-equal jose "exit") (return)))))
