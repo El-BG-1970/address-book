@@ -17,7 +17,6 @@
   (push name *addressbook*))
 
 
-
 ;; FUNCTIONS FOR IO
 
 ;; function to output the addressbook in a really readable format
@@ -53,19 +52,42 @@
     (with-standard-io-syntax
       (setf *addressbook* (read in)))))
 
+;; querying the book
+(defun where (&key last first job mail phone)
+  #'(lambda (name)
+       (and
+	(if last (string-equal (getf name :last) last) t)
+	(if last (string-equal (getf name :first) first) t)
+	(if last (string-equal (getf name :job) job) t)
+	(if last (string-equal (getf name :mail) mail) t)
+	(if last (equal (getf name :phone) phone) t))))
+
+(defun select (selector-function)
+  (remove-if-not selector-function *addressbook*))
 
 ;; MAIN LOOP FUNCTION
 (defun edit-contacts ()
   (loop (add-entry(prompt-for-name))
      (if (not (y-or-n-p "Another? [y/N]: ")) (return))))
 
+(defun query-contacts ()
+  (select
+   (where 
+   :last (prompt-read "LAST NAME")
+   :first (prompt-read "FIRST NAME")
+   :job (prompt-read "JOB")
+   :mail (prompt-read "MAIL")
+   :phone (parse-integer (prompt-read "PHONE NUMBER") :junk-allowed t))))
+
 
 (defun main-menu()
   (format t "~a~%" *welcomemsg*)
   (loop
-     (setq jose (prompt-read "whaddyawanado?"))
+     (setq jose (prompt-read "Whatchawannado? "))
      (cond ((string-equal jose "add") (edit-contacts))
 	   ((string-equal jose "save") (save-book (prompt-read "Save file as: ")))
 	   ((string-equal jose "load") (load-book (prompt-read "Load File: ")))
 	   ((string-equal jose "help") (format t "~a~%" *helpmsg*))
+	   ((string-equal jose "search") (query-contacts))
 	   ((string-equal jose "exit") (return)))))
+
